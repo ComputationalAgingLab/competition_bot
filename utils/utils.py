@@ -1,9 +1,8 @@
 import pandas as pd
+from lifelines.utils import concordance_index
 
 # Metric calculation function (placeholder)
-def calculate_metric(file_path):
-    # Your metric calculation logic here
-    df = pd.read_csv(file_path)
-    # Example: calculate some metric from the dataframe
-    score = df['your_column'].mean()  # Replace with your logic
+def calculate_metric(test_answer, predicted_partial_hazards):
+    # Compute concordance index
+    score = concordance_index(test_answer['Time'], predicted_partial_hazards, test_answer['Event'])
     return score

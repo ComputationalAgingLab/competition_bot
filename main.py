@@ -19,6 +19,9 @@ storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 dp.middleware.setup(LoggingMiddleware())
 
+# Initialize answer
+test_answer = pd.read_csv('competition/test_answer.csv', index_col=0)
+
 # temporal states
 class Form(StatesGroup):
     nickname = State()
@@ -95,25 +98,29 @@ async def handle_document(message: types.Message):
         file_path = file.file_path
         await bot.download_file(file_path, f'submissions/{user_id}_answer.csv')
 
-        # Calculate metric
-        score = calculate_metric(f'submissions/{user_id}_answer.csv')
-        score = round(score, 5)
-        nsub += 1
+        try:
+            # Calculate metric
+            predicted_hazards = pd.read_csv(f'submissions/{user_id}_answer.csv', index_col=0)
+            score = calculate_metric(test_answer, predicted_hazards)
+            score = round(score, 5)
+            nsub += 1
 
-        # Update database
-        # Check if user already exists
-        cur.execute("SELECT best_score FROM competition WHERE user_id = ?", (user_id,))
-        row = cur.fetchone()
-        if score > row[0]:  # Assuming higher score is better;
-            cur.execute("UPDATE competition SET submissions = submissions + 1, best_score = ? WHERE user_id = ?", (score, user_id))
-        else:
-            cur.execute("UPDATE competition SET submissions = ? WHERE user_id = ?", (nsub, user_id))
+            # Update database
+            # Check if user already exists
+            cur.execute("SELECT best_score FROM competition WHERE user_id = ?", (user_id,))
+            row = cur.fetchone()
+            if score > row[0]:  # Assuming higher score is better;
+                cur.execute("UPDATE competition SET submissions = submissions + 1, best_score = ? WHERE user_id = ?", (score, user_id))
+            else:
+                cur.execute("UPDATE competition SET submissions = ? WHERE user_id = ?", (nsub, user_id))
+            # Send back the score
+            await message.reply(f"Your score is: {score}\n{MAX_SUBMITS - nsub} submissions left.")
+        except:
+            await message.reply(f"Wrong file format!")
 
         conn.commit()
         conn.close()
 
-        # Send back the score
-        await message.reply(f"Your score is: {score}\n{MAX_SUBMITS - nsub} submissions left.")
     else:
         await message.reply(f"You exceed the limit of submissions.")
 

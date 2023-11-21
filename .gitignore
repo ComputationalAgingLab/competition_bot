@@ -11,6 +11,7 @@ test.ipynb
 tmp/
 submissions/
 database/*.db
+competition/
 
 # Distribution / packaging
 .Python
