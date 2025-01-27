@@ -12,6 +12,7 @@ tmp/
 submissions/
 database/*.db
 competition/
+*.code-workspace
 
 # Distribution / packaging
 .Python

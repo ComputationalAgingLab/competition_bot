@@ -127,7 +127,7 @@ async def handle_document(message: types.Message):
 # Handler for leaderboard
 @dp.message_handler(commands='leaderboard')
 async def send_leaderboard(message: types.Message):
-    leaderboard = "Leaderboard:\n"
+    leaderboard = "Leaderboard:\n\n"
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
     cur.execute("SELECT nickname, best_score FROM competition ORDER BY best_score DESC")
