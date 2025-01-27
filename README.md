@@ -17,3 +17,9 @@ To run use the following command:
 ```
 python main.py
 ```
+
+## bot commands
+`/start` - starts bot. If it is the first bot usage, it will propose to enter the nickname. Next, the bot will offer to send a `.csv` file with answer. If the file in the appropriate format, bot will calcuate a test score and report it. Otherwise it returns message with error.
+
+`/leaderboard` - bot returns a table with leaderboard, where names and test scores only are presetned.
+
